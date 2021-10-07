@@ -27,6 +27,7 @@ TN = 0
 app = dash.Dash(__name__,
                 # assets_external_path='https://unpkg.com/nes.css@2.3.0/css/nes.css'
                 )
+server = app.server
 
 app.layout = html.Div(
 
