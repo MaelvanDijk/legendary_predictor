@@ -40,7 +40,7 @@ app.layout = html.Div(
             rel='stylesheet',
             href='https://unpkg.com/nes.css@latest/css/nes.min.css'
         ),
-
+    dcc.Interval('graph-update', interval = 2000, n_intervals = 0),
     html.H1(children='Pokémon Laboratory'),
 
     html.Div(children='''
@@ -108,9 +108,10 @@ def make_predictions(n_clicks, defense, hp, sp_attack, sp_defense, experience_gr
     Output('Confusion-figure', 'figure'),
     Input('Correct-button', 'n_clicks'),
     Input('Wrong-button', 'n_clicks'),
-    Input('my-output', 'children')
+    Input('my-output', 'children'),
+    Input('graph-update', 'n_intervals')
 )
-def correct_predictions(clicks_correct, clicks_wrong, prediction):
+def correct_predictions(clicks_correct, clicks_wrong, prediction, n):
     global TP
     global TN
     global FP
@@ -169,7 +170,6 @@ def correct_predictions(clicks_correct, clicks_wrong, prediction):
 
 
     return fig
-
 
 
 if __name__ == '__main__':
