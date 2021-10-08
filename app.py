@@ -40,7 +40,7 @@ app.layout = html.Div(
             rel='stylesheet',
             href='https://unpkg.com/nes.css@latest/css/nes.min.css'
         ),
-    dcc.Interval('graph-update', interval = 2000, n_intervals = 0),
+
     html.H1(children='Pokémon Laboratory'),
 
     html.Div(children='''
@@ -76,6 +76,13 @@ app.layout = html.Div(
 
     html.Br(),
     html.Div(dcc.Graph(id='Confusion-figure')),
+
+    html.Div([
+        dcc.Store(id='TP-value', data= 0, storage_type='session'),
+        dcc.Store(id='TN-value', data= 0, storage_type='session'),
+        dcc.Store(id='FP-value', data= 0, storage_type='session'),
+        dcc.Store(id='FN-value', data= 0, storage_type='session'),
+    ])
 ])
 
 @app.callback(
@@ -106,16 +113,28 @@ def make_predictions(n_clicks, defense, hp, sp_attack, sp_defense, experience_gr
 
 @app.callback(
     Output('Confusion-figure', 'figure'),
+    Output('TP-value', 'data'),
+    Output('TN-value', 'data'),
+    Output('FP-value', 'data'),
+    Output('FN-value', 'data'),
     Input('Correct-button', 'n_clicks'),
     Input('Wrong-button', 'n_clicks'),
     Input('my-output', 'children'),
-    Input('graph-update', 'n_intervals')
+    State('TP-value', 'data'),
+    State('TN-value', 'data'),
+    State('FP-value', 'data'),
+    State('FN-value', 'data'),
 )
-def correct_predictions(clicks_correct, clicks_wrong, prediction, n):
-    global TP
-    global TN
-    global FP
-    global FN
+def correct_predictions(clicks_correct, clicks_wrong, prediction, TP_value, TN_value, FP_value, FN_value):
+    # global TP
+    # global TN
+    # global FP
+    # global FN
+
+    TP = 1 if TP_value is None else TP_value
+    TN = 1 if TN_value is None else TN_value
+    FP = 1 if FP_value is None else FP_value
+    FN = 1 if FN_value is None else FN_value
 
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'Correct-button' in changed_id:
@@ -169,7 +188,8 @@ def correct_predictions(clicks_correct, clicks_wrong, prediction, n):
     fig['data'][0]['showscale'] = True
 
 
-    return fig
+    return fig, TP, TN, FP, FN
+
 
 
 if __name__ == '__main__':
